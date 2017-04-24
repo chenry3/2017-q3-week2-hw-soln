@@ -1,0 +1,15 @@
+apache_remove_default_vhost: true
+
+apache_vhosts:
+  # Additional optional properties: 'serveradmin, serveralias, extra_parameters'.
+  - servername: "{{ ansible_fqdn }}"
+    documetroot: "/var/www/html"
+
+apache_vhosts_ssl:
+  - {
+    servername: "{{ ansible_fqdn }}",
+    documentroot: "/var/www/html",
+    certificate_file: "/etc/apache2/certs/{{ ansible_fqdn }}.crt",
+    certificate_key_file: "/etc/apache2/certs/{{ ansible_fqdn }}.key",
+    #certificate_chain_file: "/etc/apache2/certs/$inventory_hostname.chain"
+  }

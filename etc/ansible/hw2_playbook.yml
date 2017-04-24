@@ -1,0 +1,34 @@
+- hosts: apache
+  vars_files:
+    - vars/group_vars/apache.yml
+
+  # pre_tasks execute before roles
+  pre_tasks:
+    - name: "Create Apache2 certs directory"
+      file:
+        path: /etc/apache2/certs
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: "Copy Apache2 OpenSSL CNF template into place"
+      template:
+        src: hw2_playbook/templates/openssl.cnf.j2
+        dest: /etc/apache2/certs/{{ansible_fqdn}}.cnf
+        owner: root
+        group: root
+        mode: 0644
+    
+    - name: "Generate SSL Certificate for FQDN"
+      command: openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/apache2/certs/{{ansible_fqdn}}.key -out /etc/apache2/certs/{{ansible_fqdn}}.crt -config /etc/apache2/certs/{{ansible_fqdn}}.cnf -batch creates=/etc/apache2/certs/{{ansible_fqdn}}.key
+
+  roles:
+    - { role: geerlingguy.apache }
+
+  tasks:
+    - name: "Copy HW solutions to web dir"
+      copy:
+        src: /etc/ansible/hw2_playbook/files/run.sh
+        dest: /var/www/html/hw2.txt
+        mode: 0644

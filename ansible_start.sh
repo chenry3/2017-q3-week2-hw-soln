@@ -1,0 +1,1 @@
+etc/ansible/hw2_playbook/files/run.sh
